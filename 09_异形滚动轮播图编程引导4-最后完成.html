@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>09_异形滚动轮播图编程引导4-最后完成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .yixing {
+            width: 670px;
+            height: 221px;
+            background: url("./images/pic_bg.gif");
+            margin: 100px auto;
+            border: 1px solid #000000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .yixing ul {
+            list-style: none;
+        }
+
+        .yixing ul li {
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            opacity: 1;
+            /*兼容IE*/
+            filter: alpha(opacity=100);
+        }
+
+        /*img元素不会被父亲的宽高所限制，所以需要单独给img元素设置宽高，否则就会溢出父盒子*/
+        .yixing ul li img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .yixing ul li.stateA {
+            width: 55px;
+            height: 37px;
+            left: -55px;
+            top: 84px;
+            opacity: 0;
+        }
+
+        .yixing ul li.stateB {
+            width: 71px;
+            height: 54px;
+            left: 16px;
+            top: 67px;
+        }
+
+        .yixing ul li.stateC {
+            width: 122px;
+            height: 86px;
+            left: 104px;
+            top: 35px;
+        }
+
+        .yixing ul li.stateD {
+            width: 161px;
+            height: 112px;
+            left: 247px;
+            top: 16px;
+        }
+
+        .yixing ul li.stateE {
+            width: 122px;
+            height: 86px;
+            left: 436px;
+            top: 35px;
+        }
+
+        .yixing ul li.stateF {
+            width: 71px;
+            height: 54px;
+            left: 583px;
+            top: 67px;
+        }
+
+        .yixing ul li.stateG {
+            width: 55px;
+            height: 37px;
+            left: 678px;
+            top: 84px;
+            opacity: 0;
+        }
+
+        .yixing .btns .rightBtn {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            right: 26px;
+            top: 151px;
+            background: red;
+        }
+
+        .yixing .btns .leftBtn {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            left: 26px;
+            top: 151px;
+            background: red;
+        }
+
+    </style>
+</head>
+<body>
+<div class="yixing" id="yixing">
+    <ul>
+        <li class="stateA"><img src="./images/number/0.png" alt=""></li>
+        <li class="stateB"><img src="./images/number/1.png" alt=""></li>
+        <li class="stateC"><img src="./images/number/2.png" alt=""></li>
+        <li class="stateD"><img src="./images/number/3.png" alt=""></li>
+        <li class="stateE"><img src="./images/number/4.png" alt=""></li>
+        <li class="stateF"><img src="./images/number/5.png" alt=""></li>
+        <li class="stateG"><img src="./images/number/6.png" alt=""></li>
+    </ul>
+    <div class="btns">
+        <a href="javascript:;" id="leftBtn" class="leftBtn"></a>
+        <a href="javascript:;" id="rightBtn" class="rightBtn"></a>
+    </div>
+</div>
+
+<script src="js/animate-2.0.1.js"></script>
+<script src="js/fetchComputedStyle.js"></script>
+<script>
+    let lis = document.getElementsByTagName("li")
+    let rightBtn = document.getElementById("rightBtn")
+    let yixing = document.getElementById("yixing")
+
+    //lis是类数组对象，getElementsByTagName得到的元素们是类数组对象，不是数组
+    //所以lis没有pop方法，也没有unshift方法
+    let lisArray = []
+
+    let JSONarr = []
+
+    //把所有的状态都推入数组：
+    for (let i = 0; i < lis.length; i++) {
+        JSONarr.push({
+            "width": parseInt(fetchComputedStyle(lis[i], "width")),
+            "height": parseInt(fetchComputedStyle(lis[i], "height")),
+            "top": parseInt(fetchComputedStyle(lis[i], "top")),
+            "left": parseInt(fetchComputedStyle(lis[i], "left")),
+            "opacity": parseInt(fetchComputedStyle(lis[i], "opacity"))
+        })
+        //liArray和lis是一样的结构，只不过lis是类数组对象，而lisArray是数组
+        lisArray.push(lis[i])
+    }
+    console.log(lisArray)
+
+
+    let timer = setInterval(rightBtnHandler,1000)
+    yixing.onmouseover = function(){
+        clearInterval(timer)
+    }
+    yixing.onmouseout = function(){
+        timer = setInterval(rightBtnHandler,1000)
+    }
+
+    rightBtn.onclick = rightBtnHandler
+
+    function rightBtnHandler() {
+        //函数节流：
+        if (lisArray[1].isanimated) return;
+        for (let i = 1; i < lis.length; i++) {
+            animate(lisArray[i], JSONarr[i - 1], 1000, "BounceEaseOut")
+        }
+        //让0号元素瞬移到最右侧
+        for (let k in JSONarr[6]) {
+            lisArray[0].style[k] = JSONarr[6][k] + "px"
+        }
+        //交换身份，将lisArray数组的第一项提出放到最后一项
+        lisArray.push(lisArray.shift())
+        console.log(lisArray)
+    }
+
+    leftBtn.onclick = leftBtnHandler
+
+    function leftBtnHandler() {
+        //函数节流：
+        if (lisArray[1].isanimated) return;
+        for (let i = 5; i >= 0; i--) {
+            animate(lisArray[i], JSONarr[i + 1], 1000, "BounceEaseOut")
+        }
+        //让6号元素瞬移到最左侧
+        for (let k in JSONarr[0]) {
+            console.log("1")
+            lisArray[6].style[k] = JSONarr[0][k] + "px"
+        }
+        //交换身份，将lisArray数组的最后一项提出放到第一项
+        lisArray.unshift(lisArray.pop())
+        console.log(lisArray)
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>秒表</title>
+  </head>
+  <body>
+    <h1>这里将显示时间</h1>
+    <script>var s = 0;
+var h1 = document.getElementsByTagName("h1")[0];
+setInterval(function () {
+  s++;
+  console.log("1");
+  h1.innerHTML = parseInt(s / 60) + "分" + s % 60 + "秒";
+}, 1000);</script>
+  </body>
+</html>

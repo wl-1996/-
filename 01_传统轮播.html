@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>传统轮播</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .carousel {
+            width: 560px;
+            height: 300px;
+            margin: 100px auto;
+            border: 1px solid blue;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel .m_unit {
+            width: 5000px;
+            background: yellow;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .carousel .m_unit ul {
+            list-style: none;
+        }
+
+        .carousel .m_unit ul li {
+            float: left;
+            height: 300px;
+        }
+
+        .btns a {
+            width: 40px;
+            height: 40px;
+            background: yellow;
+            position: absolute;
+            top: 50%;
+            margin-top: -20px;
+            z-index: 9;
+        }
+
+        .btns .leftBtn {
+            left: 10px;
+        }
+
+        .btns .rightBtn {
+            right: 10px;
+        }
+
+        .circles {
+            width: 150px;
+            height: 18px;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .circles ol {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .circles ol li {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: pink;
+            cursor: pointer;
+        }
+
+        .circles ol li.cur {
+            background: purple;
+        }
+    </style>
+</head>
+<body>
+<div class="carousel" id="carousel">
+    <div class="btns">
+        <!--javascript:; 用来阻止默认动作-->
+        <a href="javascript:;" class="leftBtn" id="leftBtn"></a>
+        <a href="javascript:;" class="rightBtn" id="rightBtn"></a>
+    </div>
+    <div class="m_unit" id="m_unit">
+        <ul>
+            <li><a href=""><img src="./images/0.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/1.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/2.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/3.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/4.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div class="circles" id="circles">
+        <ol>
+            <li class="cur"></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </div>
+</div>
+
+<script src="./js/animate-2.0.1.js"></script>
+<script>
+    let options = {
+        "interval": 2000,
+        "animatetime": 500,
+        "tween": "Linear",
+        "width": 560
+    }
+
+    // 获取元素
+    let carousel = document.getElementById("carousel")
+    let leftBtn = document.getElementById("leftBtn")
+    let rightBtn = document.getElementById("rightBtn")
+    let m_unit = document.getElementById("m_unit")
+    let circles = document.getElementById("circles")
+    let imageUl = m_unit.getElementsByTagName("ul")[0]
+    let imageLis = imageUl.getElementsByTagName("li")
+    let circlesLis = circles.getElementsByTagName("li")
+
+    // 克隆前得到的图片个数：
+    let length = imageLis.length
+    console.log(length)
+
+    //  克隆第一张li图片，放到最后
+    imageUl.appendChild(imageLis[0].cloneNode(true))
+
+
+    //  信号量
+    let idx = 0; //表示第几张图片
+
+    // 自动轮播
+    let timer = setInterval(rightBtnHandler, options.interval)
+
+    // 鼠标进入停止自动轮播
+    carousel.onmouseover = function () {
+        clearInterval(timer)
+    }
+
+    // 鼠标离开自动轮播
+    carousel.onmouseout = function () {
+        timer = setInterval(rightBtnHandler, options.interval)
+    }
+
+    //  添加右按钮监听
+    rightBtn.onclick = rightBtnHandler
+
+    // 右按钮的事件处理函数
+    function rightBtnHandler() {
+        //函数节流,意思是如果当前已经点击过一次了，那么就等待这次点击事件执行完后才能响应下次点击
+        if (m_unit.isanimated) return
+        //信号量的变化
+        idx++;
+        //改变小圆点：
+        changeCircles()
+        //运动机构的移动，调用封装好的animate函数
+        animate(m_unit, {left: -options.width * idx}, options.animatetime, options.tween, function () {
+            if (idx == length) {
+                idx = 0;
+                m_unit.style.left = "0px"
+            }
+        })
+    }
+
+    //添加左按钮监听：
+    leftBtn.onclick = function () {
+        //函数节流
+        if (m_unit.isanimated) return;
+        //信号量的变化
+        idx--;
+        if (idx < 0) {
+            idx = length - 1
+            m_unit.style.left = -options.width * length + "px"
+        }
+        //改变小圆点
+        changeCircles()
+        // 运动机构的移动，调用封装好的animate函数
+        animate(m_unit, {left: -options.width * idx}, options.animatetime, options.tween)
+
+    }
+
+    //小圆点监听
+    for (let i = 0; i < circlesLis.length; i++) {
+        circlesLis[i].index = i;
+        circlesLis[i].onclick = function () {
+            //哪个小圆点被点击，哪个小圆点就是信号量
+            idx = this.index;
+            // 信号量改了，接下来就带拉动：
+            animate(m_unit, {left: -options.width * idx}, options.animatetime, options.tween)
+            changeCircles()
+        }
+
+    }
+
+    // 根据信号量设置小圆点
+    function changeCircles() {
+        //idx可能是5，因为imageUl里加了一个li。而小圆点只有5个，最大下标是4
+        let n = idx === length ? 0 : idx;
+        for (let i = 0; i < circlesLis.length; i++) {
+            circlesLis[i].className = ""
+        }
+        circlesLis[n].className = "cur"
+    }
+</script>
+</body>
+</html>

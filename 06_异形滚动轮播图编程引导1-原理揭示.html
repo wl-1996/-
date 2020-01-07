@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>异形滚动轮播图编程引导1-原理揭示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .yixing {
+            width: 670px;
+            height: 221px;
+            background: url("./images/pic_bg.gif");
+            margin: 100px auto;
+            border: 1px solid #000000;
+            position: relative;
+        }
+
+        .yixing ul {
+            list-style: none;
+        }
+
+        .yixing ul li {
+            width: 10px;
+            height: 10px;
+            position: absolute;
+        }
+
+        /*img元素不会被父亲的宽高所限制，所以需要单独给img元素设置宽高，否则就会溢出父盒子*/
+        .yixing ul li img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .yixing ul li.stateA {
+            width: 55px;
+            height: 37px;
+            left: -55px;
+            top: 84px;
+        }
+
+        .yixing ul li.stateB {
+            width: 71px;
+            height: 54px;
+            left: 16px;
+            top: 67px;
+        }
+
+        .yixing ul li.stateC {
+            width: 122px;
+            height: 86px;
+            left: 104px;
+            top: 35px;
+        }
+
+        .yixing ul li.stateD {
+            width: 161px;
+            height: 112px;
+            left: 247px;
+            top: 16px;
+        }
+
+        .yixing ul li.stateE {
+            width: 122px;
+            height: 86px;
+            left: 436px;
+            top: 35px;
+        }
+
+        .yixing ul li.stateF {
+            width: 71px;
+            height: 54px;
+            left: 583px;
+            top: 67px;
+        }
+
+        .yixing ul li.stateG {
+            width: 55px;
+            height: 37px;
+            left: 678px;
+            top: 84px;
+        }
+
+        .yixing .btns .rightBtn {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            right: 26px;
+            top: 151px;
+            background: red;
+        }
+    </style>
+</head>
+<body>
+<div class="yixing">
+    <ul>
+        <li class="stateA"><img src="./images/number/0.png" alt=""></li>
+        <li class="stateB"><img src="./images/number/1.png" alt=""></li>
+        <li class="stateC"><img src="./images/number/2.png" alt=""></li>
+        <li class="stateD"><img src="./images/number/3.png" alt=""></li>
+        <li class="stateE"><img src="./images/number/4.png" alt=""></li>
+        <li class="stateF"><img src="./images/number/5.png" alt=""></li>
+        <li class="stateG"><img src="./images/number/6.png" alt=""></li>
+    </ul>
+    <div class="btns">
+        <a href="javascript:;" id="rightBtn" class="rightBtn"></a>
+    </div>
+</div>
+
+<script src="js/animate-2.0.1.js"></script>
+<script>
+    let lis = document.getElementsByTagName("li")
+    let rightBtn = document.getElementById("rightBtn")
+
+    let JSOND = {
+        "width": 161,
+        "height": 112,
+        "left": 247,
+        "top": 16
+    }
+    let JSONC = {
+        "width": 122,
+        "height": 86,
+        "left": 104,
+        "top": 35
+    }
+    rightBtn.onclick = function () {
+        animate(lis[4], JSOND, 1000)
+        animate(lis[3],JSONC,1000)
+    }
+</script>
+</body>
+</html>

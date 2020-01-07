@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>传统轮播</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .carousel {
+            width: 560px;
+            height: 300px;
+            margin: 100px auto;
+            border: 1px solid blue;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .carousel .imageList ul {
+            list-style: none;
+        }
+
+        .carousel .imageList ul li {
+            display: none;
+        }
+
+        .btns a {
+            width: 40px;
+            height: 40px;
+            background: yellow;
+            position: absolute;
+            top: 50%;
+            margin-top: -20px;
+            z-index: 9;
+        }
+
+        .btns .leftBtn {
+            left: 10px;
+        }
+
+        .btns .rightBtn {
+            right: 10px;
+        }
+
+        .circles {
+            width: 150px;
+            height: 18px;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .circles ol {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .circles ol li {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: pink;
+            cursor: pointer;
+        }
+
+        .circles ol li.cur {
+            background: purple;
+        }
+
+        .m_unit {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1120px;
+            height: 300px;
+            border: 5px solid red;
+        }
+
+        .m_unit ul {
+            list-style: none;
+        }
+
+        .m_unit ul li {
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<div class="carousel" id="carousel">
+    <div class="btns">
+        <!--javascript:; 用来阻止默认动作-->
+        <a href="javascript:;" class="leftBtn" id="leftBtn"></a>
+        <a href="javascript:;" class="rightBtn" id="rightBtn"></a>
+    </div>
+    <div class="imageList" id="imageList">
+        <ul>
+            <li><a href=""><img src="./images/0.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/1.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/2.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/3.jpg" alt=""></a></li>
+            <li><a href=""><img src="./images/4.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div class="m_unit" id="m_unit">
+        <ul>
+        </ul>
+    </div>
+    <div class="circles" id="circles">
+        <ol>
+            <li class="cur"></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </div>
+</div>
+
+<script src="./js/animate-2.0.1.js"></script>
+<script>
+    // 获取元素
+    let carousel = document.getElementById("carousel")
+    let leftBtn = document.getElementById("leftBtn")
+    let rightBtn = document.getElementById("rightBtn")
+    let imageList = document.getElementById("imageList")
+    let circles = document.getElementById("circles")
+    let imageUl = imageList.getElementsByTagName("ul")[0]
+    let imageLis = imageUl.getElementsByTagName("li")
+    let circlesLis = circles.getElementsByTagName("li")
+
+    let m_unit = document.getElementById("m_unit")
+    let m_unitUl = m_unit.getElementsByTagName("ul")[0]
+
+    // 首先让前两个li克隆追加到m_unitUl:
+    m_unitUl.appendChild(imageLis[0].cloneNode((true)))
+    m_unitUl.appendChild(imageLis[1].cloneNode((true)))
+
+    let idx = 0;
+
+    rightBtn.onclick = function () {
+        m_unit.style.left = "0px"
+        //准备新的图片，清空里面的图片
+        m_unitUl.innerHTML = ""
+        //追加原来信号量图片
+        m_unitUl.appendChild(imageLis[idx].cloneNode(true))
+        //更新信号量
+        idx++
+        if(idx>4){
+            idx = 0
+        }
+        //增加新信号量图片
+        m_unitUl.appendChild(imageLis[idx].cloneNode(true))
+        //拉动传送带
+        animate(m_unit, {"left": -560}, 800)
+        changeCircles()
+    }
+
+    leftBtn.onclick = function () {
+        m_unit.style.left = "-560px"
+        //准备新的图片，清空里面的图片
+        m_unitUl.innerHTML = ""
+        //追加原来信号量图片
+        m_unitUl.append(imageLis[idx].cloneNode(true))
+        //更新信号量
+        idx--
+        if(idx<0){
+            idx = 4
+        }
+        //增加新信号量图片
+        m_unitUl.prepend(imageLis[idx].cloneNode(true))
+        //拉动传送带
+        animate(m_unit, {"left": 0}, 800)
+        changeCircles()
+    }
+
+    // 根据信号量设置小圆点
+    function changeCircles() {
+        //排他，先把所有小圆点去掉类名
+        for (let i = 0; i < circlesLis.length; i++) {
+            circlesLis[i].className = ""
+        }
+        circlesLis[idx].className = "cur"
+    }
+
+</script>
+</body>
+</html>
